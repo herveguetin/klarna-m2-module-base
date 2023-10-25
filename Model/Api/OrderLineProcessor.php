@@ -16,6 +16,7 @@ use Magento\Sales\Api\Data\InvoiceInterface;
 use Magento\Framework\Api\ExtensibleDataInterface;
 use Klarna\Orderlines\Model\Container\Parameter;
 use Klarna\Orderlines\Model\Container\DataHolder;
+use Magento\Sales\Model\Order\Payment;
 
 /**
  * Processing the order lines based on the given object
@@ -147,12 +148,14 @@ class OrderLineProcessor
         if ($totals === null) {
             $totals = [];
         }
+        /** @var Payment $payment */
+        $payment = $data->getOrder()->getPayment();
 
         $this->fillBasicDataHolder(
             $data,
             $totals,
             $this->getItemsFromPurchaseObject($data->getAllItems()),
-            $data->getBaseTaxAmount()
+            $payment->formatAmount($data->getBaseTaxAmount(), true)
         );
         $this->dataHolder->setBaseShippingInclTax($data->getBaseShippingInclTax())
             ->setShippingAmount($data->getShippingTaxAmount())
